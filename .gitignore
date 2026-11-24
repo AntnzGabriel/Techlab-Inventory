@@ -1,0 +1,22 @@
+# Arquivos compilados
+out/
+target/
+
+# Banco de dados SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Configurações de IDE
+.idea/
+.vscode/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
