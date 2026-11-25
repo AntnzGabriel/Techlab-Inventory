@@ -7,6 +7,16 @@ public class DispositivoRede extends AtivoTI {
 
     private int quantidadePortas;
 
+    private static int validarQuantidadePortas(int quantidadePortas) {
+        if (quantidadePortas <= 0) {
+            throw new IllegalArgumentException(
+                "A quantidade de portas deve ser maior que zero."
+            );
+        }
+
+        return quantidadePortas;
+    }
+
     // Construtor para novos dispositivos de rede
     public DispositivoRede(
             String codigoPatrimonio,
@@ -17,7 +27,8 @@ public class DispositivoRede extends AtivoTI {
 
         super(codigoPatrimonio, modelo, dataAquisicao, status);
 
-        this.quantidadePortas = quantidadePortas;
+        this.quantidadePortas =
+            validarQuantidadePortas(quantidadePortas);
     }
 
     // Construtor para dispositivos recuperados do banco
@@ -31,7 +42,8 @@ public class DispositivoRede extends AtivoTI {
 
         super(id, codigoPatrimonio, modelo, dataAquisicao, status);
 
-        this.quantidadePortas = quantidadePortas;
+        this.quantidadePortas =
+            validarQuantidadePortas(quantidadePortas);
     }
 
     // Getter
@@ -41,13 +53,13 @@ public class DispositivoRede extends AtivoTI {
 
     // Setter
     public void setQuantidadePortas(int quantidadePortas) {
-        this.quantidadePortas = quantidadePortas;
+        this.quantidadePortas =
+            validarQuantidadePortas(quantidadePortas);
     }
 
-    // Implementação do método abstrato
     @Override
     public double calcularCustoManutencaoMensal() {
-        return 0.0; // Valor provisório
+        return 0.0;
     }
 }
 

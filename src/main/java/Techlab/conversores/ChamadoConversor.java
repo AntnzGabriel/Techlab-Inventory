@@ -7,18 +7,18 @@ import Techlab.negocio.ChamadoSuporte;
 
 public class ChamadoConversor {
 
-    private final AtivoConversor ativoConversor;
-
-    public ChamadoConversor() {
-        this.ativoConversor = new AtivoConversor();
-    }
-
     // Converte chamado em DTO
     public ChamadoDTO paraDTO(ChamadoSuporte chamado) {
 
         if (chamado == null) {
             throw new IllegalArgumentException(
                 "O chamado não pode ser nulo."
+            );
+        }
+
+        if (chamado.getAtivoRelacionado() == null) {
+            throw new IllegalArgumentException(
+                "O chamado não possui um ativo relacionado."
             );
         }
 
@@ -71,3 +71,4 @@ public class ChamadoConversor {
         );
     }
 }
+

@@ -1,5 +1,6 @@
 
 
+
 package Techlab.db;
 
 import Techlab.excecoes.FalhaConexaoBDException;
@@ -27,7 +28,13 @@ public class CriadorTabelas {
                 codigo_patrimonio TEXT NOT NULL UNIQUE,
                 modelo TEXT NOT NULL,
                 data_aquisicao TEXT NOT NULL,
-                status TEXT NOT NULL,
+                status TEXT NOT NULL CHECK (
+                    status IN (
+                        'Ativo',
+                        'EmManutencao',
+                        'Descartado'
+                    )
+                ),
                 tipo TEXT NOT NULL CHECK (
                     tipo IN (
                         'SERVIDOR',
@@ -102,31 +109,31 @@ public class CriadorTabelas {
         );
     }
 
-public void criarTabelaChamados()
-        throws FalhaConexaoBDException {
+    public void criarTabelaChamados()
+            throws FalhaConexaoBDException {
 
-    String sql = """
-        CREATE TABLE IF NOT EXISTS chamados (
-            id INTEGER PRIMARY KEY,
-            titulo TEXT NOT NULL,
-            descricao TEXT NOT NULL,
-            prioridade TEXT NOT NULL CHECK (
-                prioridade IN ('Baixa', 'Media', 'Alta')
-            ),
-            status TEXT NOT NULL CHECK (
-                status IN ('Aberto', 'EmAndamento', 'Fechado')
-            ),
-            data_abertura TEXT NOT NULL,
-            ativo_id INTEGER NOT NULL,
-            FOREIGN KEY (ativo_id)
-                REFERENCES ativos(id)
-        );
-        """;
+        String sql = """
+            CREATE TABLE IF NOT EXISTS chamados (
+                id INTEGER PRIMARY KEY,
+                titulo TEXT NOT NULL,
+                descricao TEXT NOT NULL,
+                prioridade TEXT NOT NULL CHECK (
+                    prioridade IN ('Baixa', 'Media', 'Alta')
+                ),
+                status TEXT NOT NULL CHECK (
+                    status IN ('Aberto', 'EmAndamento', 'Fechado')
+                ),
+                data_abertura TEXT NOT NULL,
+                ativo_id INTEGER NOT NULL,
+                FOREIGN KEY (ativo_id)
+                    REFERENCES ativos(id)
+            );
+            """;
 
-    banco.executarQuery(sql);
+        banco.executarQuery(sql);
 
-    System.out.println("Tabela chamados criada com sucesso!");
-}
+        System.out.println("Tabela chamados criada com sucesso!");
+    }
 
     public void criarTodasTabelas()
             throws FalhaConexaoBDException {
@@ -136,10 +143,9 @@ public void criarTabelaChamados()
         criarTabelaEstacoesTrabalho();
         criarTabelaDispositivosRede();
         criarTabelaChamados();
+
         System.out.println(
             "Todas as tabelas foram criadas com sucesso!"
         );
     }
 }
-
-

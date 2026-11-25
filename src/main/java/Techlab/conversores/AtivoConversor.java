@@ -66,6 +66,12 @@ public class AtivoConversor {
             );
         }
 
+        if (dto.getTipo() == null || dto.getTipo().isBlank()) {
+            throw new IllegalArgumentException(
+                "Tipo de ativo não informado."
+            );
+        }
+
         switch (dto.getTipo()) {
 
             case "SERVIDOR":

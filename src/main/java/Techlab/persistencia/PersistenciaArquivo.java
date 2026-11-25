@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -65,11 +66,24 @@ public class PersistenciaArquivo {
 
             for (AtivoDTO ativo : ativos) {
 
+                if (ativo == null) {
+                    throw new IOException(
+                        "A lista contém um ativo nulo."
+                    );
+                }
+
+                if (ativo.getDataAquisicao() == null) {
+                    throw new IOException(
+                        "Data de aquisição não informada para o ativo ID "
+                        + ativo.getId()
+                    );
+                }
+
                 escritor.write(
                     ativo.getId() + ";" +
                     codificar(ativo.getCodigoPatrimonio()) + ";" +
                     codificar(ativo.getModelo()) + ";" +
-                    codificar(String.valueOf(ativo.getDataAquisicao())) + ";" +
+                    codificar(ativo.getDataAquisicao().toString()) + ";" +
                     codificar(ativo.getStatus()) + ";" +
                     codificar(ativo.getTipo()) + ";" +
                     codificar(ativo.getIpEstatico()) + ";" +
@@ -101,46 +115,58 @@ public class PersistenciaArquivo {
                 Files.newBufferedReader(caminhoArquivo)) {
 
             String linha;
+            int numeroLinha = 0;
 
             while ((linha = leitor.readLine()) != null) {
 
-                String[] dados = linha.split(";", -1);
+                numeroLinha++;
 
-                if (dados.length != 12) {
-                    continue;
-                }
+                try {
+                    String[] dados = linha.split(";", -1);
 
-                AtivoDTO dto = new AtivoDTO();
+                    if (dados.length != 12) {
+                        throw new IllegalArgumentException(
+                            "Quantidade de campos inválida."
+                        );
+                    }
 
-                dto.setId(Integer.parseInt(dados[0]));
-                dto.setCodigoPatrimonio(decodificar(dados[1]));
-                dto.setModelo(decodificar(dados[2]));
-                dto.setDataAquisicao(
-                    java.time.LocalDateTime.parse(
-                        decodificar(dados[3])
-                    )
-                );
-                dto.setStatus(decodificar(dados[4]));
-                dto.setTipo(decodificar(dados[5]));
-                dto.setIpEstatico(decodificar(dados[6]));
-                dto.setSistemaOperacional(decodificar(dados[7]));
+                    AtivoDTO dto = new AtivoDTO();
 
-                if (!dados[8].isEmpty()) {
-                    dto.setCapacidadeRAM(
-                        Integer.parseInt(dados[8])
+                    dto.setId(Integer.parseInt(dados[0]));
+                    dto.setCodigoPatrimonio(decodificar(dados[1]));
+                    dto.setModelo(decodificar(dados[2]));
+                    dto.setDataAquisicao(
+                        LocalDateTime.parse(decodificar(dados[3]))
+                    );
+                    dto.setStatus(decodificar(dados[4]));
+                    dto.setTipo(decodificar(dados[5]));
+                    dto.setIpEstatico(decodificar(dados[6]));
+                    dto.setSistemaOperacional(decodificar(dados[7]));
+
+                    if (!dados[8].isEmpty()) {
+                        dto.setCapacidadeRAM(
+                            Integer.parseInt(dados[8])
+                        );
+                    }
+
+                    dto.setDepartamento(decodificar(dados[9]));
+                    dto.setUsuarioAlocado(decodificar(dados[10]));
+
+                    if (!dados[11].isEmpty()) {
+                        dto.setQuantidadePortas(
+                            Integer.parseInt(dados[11])
+                        );
+                    }
+
+                    ativos.add(dto);
+
+                } catch (RuntimeException e) {
+                    throw new IOException(
+                        "Erro ao carregar ativo na linha "
+                        + numeroLinha + ": " + e.getMessage(),
+                        e
                     );
                 }
-
-                dto.setDepartamento(decodificar(dados[9]));
-                dto.setUsuarioAlocado(decodificar(dados[10]));
-
-                if (!dados[11].isEmpty()) {
-                    dto.setQuantidadePortas(
-                        Integer.parseInt(dados[11])
-                    );
-                }
-
-                ativos.add(dto);
             }
         }
 
@@ -162,13 +188,26 @@ public class PersistenciaArquivo {
 
             for (ChamadoDTO chamado : chamados) {
 
+                if (chamado == null) {
+                    throw new IOException(
+                        "A lista contém um chamado nulo."
+                    );
+                }
+
+                if (chamado.getDataAbertura() == null) {
+                    throw new IOException(
+                        "Data de abertura não informada para o chamado ID "
+                        + chamado.getId()
+                    );
+                }
+
                 escritor.write(
                     chamado.getId() + ";" +
                     codificar(chamado.getTitulo()) + ";" +
                     codificar(chamado.getDescricao()) + ";" +
                     codificar(chamado.getPrioridade()) + ";" +
                     codificar(chamado.getStatus()) + ";" +
-                    codificar(String.valueOf(chamado.getDataAbertura())) + ";" +
+                    codificar(chamado.getDataAbertura().toString()) + ";" +
                     chamado.getAtivoRelacionadoId()
                 );
 
@@ -191,35 +230,48 @@ public class PersistenciaArquivo {
                 Files.newBufferedReader(caminhoArquivo)) {
 
             String linha;
+            int numeroLinha = 0;
 
             while ((linha = leitor.readLine()) != null) {
 
-                String[] dados = linha.split(";", -1);
+                numeroLinha++;
 
-                if (dados.length != 7) {
-                    continue;
+                try {
+                    String[] dados = linha.split(";", -1);
+
+                    if (dados.length != 7) {
+                        throw new IllegalArgumentException(
+                            "Quantidade de campos inválida."
+                        );
+                    }
+
+                    ChamadoDTO dto = new ChamadoDTO();
+
+                    dto.setId(Integer.parseInt(dados[0]));
+                    dto.setTitulo(decodificar(dados[1]));
+                    dto.setDescricao(decodificar(dados[2]));
+                    dto.setPrioridade(decodificar(dados[3]));
+                    dto.setStatus(decodificar(dados[4]));
+                    dto.setDataAbertura(
+                        LocalDateTime.parse(decodificar(dados[5]))
+                    );
+                    dto.setAtivoRelacionadoId(
+                        Integer.parseInt(dados[6])
+                    );
+
+                    chamados.add(dto);
+
+                } catch (RuntimeException e) {
+                    throw new IOException(
+                        "Erro ao carregar chamado na linha "
+                        + numeroLinha + ": " + e.getMessage(),
+                        e
+                    );
                 }
-
-                ChamadoDTO dto = new ChamadoDTO();
-
-                dto.setId(Integer.parseInt(dados[0]));
-                dto.setTitulo(decodificar(dados[1]));
-                dto.setDescricao(decodificar(dados[2]));
-                dto.setPrioridade(decodificar(dados[3]));
-                dto.setStatus(decodificar(dados[4]));
-                dto.setDataAbertura(
-                    java.time.LocalDateTime.parse(
-                        decodificar(dados[5])
-                    )
-                );
-                dto.setAtivoRelacionadoId(
-                    Integer.parseInt(dados[6])
-                );
-
-                chamados.add(dto);
             }
         }
 
         return chamados;
     }
 }
+

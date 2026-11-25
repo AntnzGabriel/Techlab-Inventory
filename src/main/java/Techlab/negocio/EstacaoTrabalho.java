@@ -1,5 +1,4 @@
 
-
 package Techlab.negocio;
 
 import java.time.LocalDateTime;
@@ -8,6 +7,16 @@ public class EstacaoTrabalho extends AtivoTI {
 
     private String departamento;
     private String usuarioAlocado;
+
+    private static String validarTexto(String valor, String campo) {
+        if (valor == null || valor.isBlank()) {
+            throw new IllegalArgumentException(
+                campo + " inválido."
+            );
+        }
+
+        return valor;
+    }
 
     // Construtor para novas estações de trabalho
     public EstacaoTrabalho(
@@ -20,8 +29,11 @@ public class EstacaoTrabalho extends AtivoTI {
 
         super(codigoPatrimonio, modelo, dataAquisicao, status);
 
-        this.departamento = departamento;
-        this.usuarioAlocado = usuarioAlocado;
+        this.departamento =
+            validarTexto(departamento, "Departamento");
+
+        this.usuarioAlocado =
+            validarTexto(usuarioAlocado, "Usuário alocado");
     }
 
     // Construtor para estações recuperadas do banco
@@ -36,8 +48,11 @@ public class EstacaoTrabalho extends AtivoTI {
 
         super(id, codigoPatrimonio, modelo, dataAquisicao, status);
 
-        this.departamento = departamento;
-        this.usuarioAlocado = usuarioAlocado;
+        this.departamento =
+            validarTexto(departamento, "Departamento");
+
+        this.usuarioAlocado =
+            validarTexto(usuarioAlocado, "Usuário alocado");
     }
 
     // Getters
@@ -51,16 +66,17 @@ public class EstacaoTrabalho extends AtivoTI {
 
     // Setters
     public void setDepartamento(String departamento) {
-        this.departamento = departamento;
+        this.departamento =
+            validarTexto(departamento, "Departamento");
     }
 
     public void setUsuarioAlocado(String usuarioAlocado) {
-        this.usuarioAlocado = usuarioAlocado;
+        this.usuarioAlocado =
+            validarTexto(usuarioAlocado, "Usuário alocado");
     }
 
-    // Implementação do método abstrato
     @Override
     public double calcularCustoManutencaoMensal() {
-        return 0.0; // Valor provisório
+        return 0.0;
     }
 }

@@ -25,7 +25,7 @@ public class ChamadoSuporte {
             AtivoTI ativoRelacionado) {
 
         this(
-            contadorID + 1,
+            ++contadorID,
             titulo,
             descricao,
             prioridade,
