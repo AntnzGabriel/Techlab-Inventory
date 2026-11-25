@@ -20,3 +20,6 @@ target/
 # Sistema operacional
 .DS_Store
 Thumbs.db
+# Arquivos gerados pelos testes de persistencia
+ativos.txt
+chamados.txt

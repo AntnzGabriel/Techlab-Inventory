@@ -5,10 +5,10 @@ import java.util.List;
 
 import Techlab.db.ConexaoSQLite;
 import Techlab.db.CriadorTabelas;
-import Techlab.excecoes.EquipamentoNaoEncontradoException;
-import Techlab.excecoes.FalhaConexaoBDException;
 import Techlab.negocio.AtivoTI;
+import Techlab.negocio.ChamadoSuporte;
 import Techlab.repositorio.AtivoDAO;
+import Techlab.repositorio.ChamadoDAO;
 
 public class main {
 
@@ -22,57 +22,56 @@ public class main {
             CriadorTabelas criador = new CriadorTabelas(banco);
             criador.criarTodasTabelas();
 
-            AtivoDAO dao = new AtivoDAO(banco);
+            AtivoDAO ativoDAO = new AtivoDAO(banco);
+            ChamadoDAO chamadoDAO = new ChamadoDAO(banco);
 
-            // Exibir os ativos antes da exclusão
-            System.out.println("\n=== ATIVOS ANTES DA EXCLUSÃO ===");
+            List<AtivoTI> ativos = ativoDAO.listarTodos();
 
-            List<AtivoTI> ativos = dao.listarTodos();
+            List<ChamadoSuporte> chamados =
+                chamadoDAO.listarTodos();
+
+            System.out.println("\n===== TECHLAB INVENTORY =====");
+
+            System.out.println(
+                "\nTotal de ativos cadastrados: " + ativos.size()
+            );
 
             for (AtivoTI ativo : ativos) {
                 System.out.println(
-                    "ID: " + ativo.getId()
-                    + " | Patrimônio: " + ativo.getCodigoPatrimonio()
-                    + " | Modelo: " + ativo.getModelo()
-                );
-            }
-
-            // Excluir o dispositivo de rede
-            System.out.println("\n=== TESTE DE EXCLUSÃO ===");
-
-            dao.deletar(3);
-
-            System.out.println("Ativo de ID 3 excluído com sucesso!");
-
-            // Consultar novamente
-            System.out.println("\n=== ATIVOS APÓS A EXCLUSÃO ===");
-
-            List<AtivoTI> ativosRestantes = dao.listarTodos();
-
-            for (AtivoTI ativo : ativosRestantes) {
-                System.out.println(
-                    "ID: " + ativo.getId()
-                    + " | Patrimônio: " + ativo.getCodigoPatrimonio()
-                    + " | Modelo: " + ativo.getModelo()
+                    "ID: " + ativo.getId() +
+                    " | Patrimônio: " + ativo.getCodigoPatrimonio() +
+                    " | Modelo: " + ativo.getModelo() +
+                    " | Status: " + ativo.getStatus()
                 );
             }
 
             System.out.println(
-                "\nTotal de ativos restantes: " + ativosRestantes.size()
+                "\nTotal de chamados cadastrados: " +
+                chamados.size()
             );
 
-        } catch (
-            FalhaConexaoBDException |
-            EquipamentoNaoEncontradoException e
-        ) {
-            System.out.println("\nFalha: " + e.getMessage());
+            for (ChamadoSuporte chamado : chamados) {
+                System.out.println(
+                    "ID: " + chamado.getId() +
+                    " | Título: " + chamado.getTitulo() +
+                    " | Prioridade: " + chamado.getPrioridade() +
+                    " | Status: " + chamado.getStatus()
+                );
+            }
+
+            System.out.println(
+                "\n===== SISTEMA EXECUTADO COM SUCESSO ====="
+            );
+
+        } catch (Exception e) {
+            System.out.println("Erro ao executar o sistema: " +
+                e.getMessage());
             e.printStackTrace();
 
         } finally {
             try {
                 banco.fecharConexao();
-
-            } catch (FalhaConexaoBDException e) {
+            } catch (Exception e) {
                 System.out.println(
                     "Erro ao fechar conexão: " + e.getMessage()
                 );

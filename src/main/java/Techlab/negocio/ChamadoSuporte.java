@@ -1,4 +1,5 @@
 
+
 package Techlab.negocio;
 
 import java.time.LocalDateTime;
@@ -11,10 +12,11 @@ public class ChamadoSuporte {
     private String titulo;
     private String descricao;
     private String prioridade;
+    private String status;
     private LocalDateTime dataAbertura;
     private AtivoTI ativoRelacionado;
 
-    // Construtor
+    // Construtor para novos chamados
     public ChamadoSuporte(
             String titulo,
             String descricao,
@@ -22,17 +24,42 @@ public class ChamadoSuporte {
             LocalDateTime dataAbertura,
             AtivoTI ativoRelacionado) {
 
-        this.id = ++contadorID;
+        this(
+            contadorID + 1,
+            titulo,
+            descricao,
+            prioridade,
+            "Aberto",
+            dataAbertura,
+            ativoRelacionado
+        );
+    }
 
-        // Valida e atribui diretamente, sem chamar métodos sobrescrevíveis.
+    // Construtor para recuperar chamados do banco
+    public ChamadoSuporte(
+            int id,
+            String titulo,
+            String descricao,
+            String prioridade,
+            String status,
+            LocalDateTime dataAbertura,
+            AtivoTI ativoRelacionado) {
+
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID inválido.");
+        }
+
+        this.id = id;
+        contadorID = Math.max(contadorID, id);
+
         this.titulo = validarTexto(titulo, "Título");
         this.descricao = validarTexto(descricao, "Descrição");
         this.prioridade = validarPrioridade(prioridade);
+        this.status = validarStatus(status);
         this.dataAbertura = validarData(dataAbertura);
         this.ativoRelacionado = validarAtivo(ativoRelacionado);
     }
 
-    // Métodos auxiliares de validação
     private static String validarTexto(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
             throw new IllegalArgumentException(campo + " inválido.");
@@ -50,16 +77,30 @@ public class ChamadoSuporte {
         return prioridade;
     }
 
+    private static String validarStatus(String status) {
+        if (status == null ||
+            !(status.equals("Aberto") ||
+              status.equals("EmAndamento") ||
+              status.equals("Fechado"))) {
+            throw new IllegalArgumentException("Status inválido.");
+        }
+        return status;
+    }
+
     private static LocalDateTime validarData(LocalDateTime data) {
         if (data == null) {
-            throw new IllegalArgumentException("Data de abertura inválida.");
+            throw new IllegalArgumentException(
+                "Data de abertura inválida."
+            );
         }
         return data;
     }
 
     private static AtivoTI validarAtivo(AtivoTI ativo) {
         if (ativo == null) {
-            throw new IllegalArgumentException("Ativo relacionado inválido.");
+            throw new IllegalArgumentException(
+                "Ativo relacionado inválido."
+            );
         }
         return ativo;
     }
@@ -79,6 +120,10 @@ public class ChamadoSuporte {
 
     public String getPrioridade() {
         return prioridade;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public LocalDateTime getDataAbertura() {
@@ -102,6 +147,10 @@ public class ChamadoSuporte {
         this.prioridade = validarPrioridade(prioridade);
     }
 
+    public void setStatus(String status) {
+        this.status = validarStatus(status);
+    }
+
     public void setDataAbertura(LocalDateTime dataAbertura) {
         this.dataAbertura = validarData(dataAbertura);
     }
@@ -116,8 +165,8 @@ public class ChamadoSuporte {
                "\nTítulo: " + titulo +
                "\nDescrição: " + descricao +
                "\nPrioridade: " + prioridade +
+               "\nStatus: " + status +
                "\nData de abertura: " + dataAbertura +
                "\nAtivo relacionado: " + ativoRelacionado.getModelo();
     }
 }
-
